@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars Recovery Station - Results</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #ff6b6b;
+            --highlight: #4ecdc4;
+            --space-bg: linear-gradient(rgba(10, 10, 30, 0.8), rgba(10, 10, 30, 0.8)),
+                        url('https://images.unsplash.com/photo-1615430535007-94da764325d0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--space-bg);
+            background-size: cover;
+            background-position: center;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .back-btn, .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+
+        .back-btn:hover, .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h2 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .results-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .result-card h3 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 1px solid var(--highlight);
+            padding-bottom: 10px;
+        }
+
+        .big-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin: 20px 0;
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .big-number small {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            display: block;
+            margin-top: 5px;
+            background: none;
+            -webkit-text-fill-color: initial;
+        }
+
+        .process-steps {
+            margin-top: 15px;
+        }
+
+        .process-step {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .process-step h4 {
+            color: var(--highlight);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container h3 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-bottom: 20px;
+        }
+
+        #resultsContent {
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 400px;
+            display: block;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+        <h1>Mars Recovery Station</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="results-header">
+            <h2>Recycling Optimization Results</h2>
+            <p>Detailed analysis of your waste recycling process</p>
+        </div>
+
+        <div id="resultsContent">
+            <p style="text-align: center; color: rgba(255, 255, 255, 0.7);">
+                Loading results...
+            </p>
+        </div>
+
+        <div class="navigation">
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Back to Input
+            </button>
+            <button class="back-btn" onclick="window.location.href='visualization.html'">
+                3D Visualization <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'index.html';
+        }
+
+        // Load results when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const results = JSON.parse(localStorage.getItem('recyclingResults'));
+
+            if (results) {
+                displayResults(results);
+            } else {
+                document.getElementById('resultsContent').innerHTML = `
+                    <div style="text-align: center; color: rgba(255, 255, 255, 0.7);">
+                        <p>No results found. Please go back to the dashboard and run an optimization first.</p>
+                    </div>
+                `;
+            }
+        });
+
+        function displayResults(results) {
+            const content = document.getElementById('resultsContent');
+
+            content.innerHTML = `
+                <div class="results-grid">
+                    <!-- Oxygen Recovery Card -->
+                    <div class="result-card">
+                        <h3>Oxygen Recovery</h3>
+                        <div class="big-number">${results.oxygenRecovered}<small>kg</small></div>
+                        <p style="text-align: center; color: rgba(255, 255, 255, 0.8);">
+                            ${results.dailyNeedPercentage}% of daily crew needs
+                        </p>
+                        <div class="process-steps">
+                            <div class="process-step">
+                                <h4><i class="fas fa-lungs"></i> Life Support Impact</h4>
+                                <p>Sufficient for ${Math.round(results.oxygenRecovered / 0.8)} crew members for 24 hours</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Materials Recovery Card -->
+                    <div class="result-card">
+                        <h3>Materials Recovery</h3>
+                        <div class="big-number">${results.materialsRecovered}<small>kg</small></div>
+                        <p style="text-align: center; color: rgba(255, 255, 255, 0.8);">
+                            Available for 3D printing and repairs
+                        </p>
+                        <div class="process-steps">
+                            <div class="process-step">
+                                <h4><i class="fas fa-cubes"></i> Potential Uses</h4>
+                                <p>• Habitat repairs<br>• Tool manufacturing<br>• Equipment upgrades</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Energy Efficiency Card -->
+                    <div class="result-card">
+                        <h3>Energy Efficiency</h3>
+                        <div class="big-number">${Math.round(results.totalInput * 1.8)}<small>kWh</small></div>
+                        <p style="text-align: center; color: rgba(255, 255, 255, 0.8);">
+                            Estimated energy consumption
+                        </p>
+                        <div class="process-steps">
+                            <div class="process-step">
+                                <h4><i class="fas fa-bolt"></i> Power Source</h4>
+                                <p>Solar panels (primary)<br>Battery backup (secondary)</p>
+                            </div>
+                            <div class="process-step">
+                                <h4><i class="fas fa-sun"></i> Recommendation</h4>
+                                <p>Run high-energy processes during peak solar hours (10:00-14:00 Mars time)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Breakdown -->
+                <div class="result-card">
+                    <h3>Process Breakdown</h3>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px;">
+                        <!-- EVA Suit Process -->
+                        <div class="process-step" style="margin-bottom: 0;">
+                            <h4><i class="fas fa-space-suit"></i> EVA Suit Processing (${results.evaSuit} kg)</h4>
+                            <p>✅ Shredding: 100% of material</p>
+                            <p>✅ Thermal processing: ${Math.round(results.evaSuit * 0.6)} kg polymer</p>
+                            <p>✅ Oxygen extraction: ${Math.round(results.evaSuit * 0.4)} kg O₂</p>
+                            <p style="color: var(--highlight); font-size: 0.9rem;">
+                                <i class="fas fa-info-circle"></i> Polymer can be used for 3D printing new suit components
+                            </p>
+                        </div>
+
+                        <!-- Air Filters Process -->
+                        <div class="process-step" style="margin-bottom: 0;">
+                            <h4><i class="fas fa-filter"></i> Air Filter Recycling (${results.airFilters} kg)</h4>
+                            <p>✅ Mechanical separation: 100% of material</p>
+                            <p>✅ Metal recovery: ${Math.round(results.airFilters * 0.3)} kg</p>
+                            <p>✅ Carbon recovery: ${Math.round(results.airFilters * 0.5)} kg</p>
+                            <p style="color: var(--highlight); font-size: 0.9rem;">
+                                <i class="fas fa-info-circle"></i> Recovered metals can be used for structural repairs
+                            </p>
+                        </div>
+
+                        <!-- Carbon Scraps Process -->
+                        <div class="process-step" style="margin-bottom: 0;">
+                            <h4><i class="fas fa-atom"></i> Carbon Processing (${results.carbonScraps} kg)</h4>
+                            <p>✅ Chemical treatment: 100% of material</p>
+                            <p>✅ Oxygen extraction: ${Math.round(results.carbonScraps * 0.6)} kg O₂</p>
+                            <p>✅ Carbon fiber: ${Math.round(results.carbonScraps * 0.4)} kg for composites</p>
+                            <p style="color: var(--highlight); font-size: 0.9rem;">
+                                <i class="fas fa-info-circle"></i> Carbon fiber ideal for lightweight structural components
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Chart Container with fixed height -->
+                <div class="chart-container">
+                    <h3>Resource Recovery Summary</h3>
+                    <div style="height: 350px;">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pie Chart Container with fixed height -->
+                <div class="chart-container">
+                    <h3>Resource Distribution</h3>
+                    <div style="height: 350px;">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            `;
+
+            // Create charts after the elements exist in the DOM
+            setTimeout(() => {
+                createResultsChart(results);
+            }, 100);
+        }
+
+        function createResultsChart(results) {
+            // Bar Chart
+            const barCtx = document.getElementById('resultsChart');
+            if (barCtx) {
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Oxygen Recovered', 'Materials Recovered', 'Total Input', 'Energy Used'],
+                        datasets: [{
+                            label: 'Quantity',
+                            data: [
+                                results.oxygenRecovered,
+                                results.materialsRecovered,
+                                results.totalInput,
+                                Math.round(results.totalInput * 1.8)
+                            ],
+                            backgroundColor: [
+                                'rgba(78, 205, 196, 0.7)',
+                                'rgba(255, 107, 107, 0.7)',
+                                'rgba(100, 149, 237, 0.7)',
+                                'rgba(255, 206, 86, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(78, 205, 196, 1)',
+                                'rgba(255, 107, 107, 1)',
+                                'rgba(100, 149, 237, 1)',
+                                'rgba(255, 206, 86, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Quantity (kg or kWh)',
+                                    color: 'white'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Pie Chart
+            const pieCtx = document.getElementById('pieChart');
+            if (pieCtx) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Oxygen', 'Materials', 'Waste'],
+                        datasets: [{
+                            data: [
+                                results.oxygenRecovered,
+                                results.materialsRecovered,
+                                results.totalInput - results.oxygenRecovered - results.materialsRecovered
+                            ],
+                            backgroundColor: [
+                                'rgba(78, 205, 196, 0.7)',
+                                'rgba(255, 107, 107, 0.7)',
+                                'rgba(100, 149, 237, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(78, 205, 196, 1)',
+                                'rgba(255, 107, 107, 1)',
+                                'rgba(100, 149, 237, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: 'white',
+                                    boxWidth: 12,
+                                    padding: 20,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Resource Distribution',
+                                color: 'white',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
