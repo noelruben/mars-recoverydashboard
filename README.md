@@ -2,7 +2,6 @@
   <source src="Website_Explanation_Video_Ready.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
